@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🧠 ExamIQ — AI-Powered Smart Study Strategist
 
@@ -31,7 +31,7 @@
 - [Data Models](#-data-models)
 - [Smart Scoring Formula](#-smart-scoring-formula)
 - [Demo Mode](#-demo-mode)
-- [Screenshots](#-screenshots)
+- [Design System](#-design-system)
 - [Contributing](#-contributing)
 
 ---
@@ -236,8 +236,8 @@ ExamIQ/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/ExamIQ.git
-cd ExamIQ
+git clone https://github.com/nitishsaini-44/examiq.git
+cd examiq
 ```
 
 ### 2. Backend Setup
@@ -283,7 +283,7 @@ The app will be available at **http://localhost:3000**.
 
 Tesseract is only required if you plan to upload **scanned** PDF papers (image-based PDFs). Digital/text-based PDFs work without it.
 
-- **Windows**: Download from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki) → Install to `C:\Program Files\Tesseract-OCR\`
+- **Windows**: Download from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki) and install to `C:\Program Files\Tesseract-OCR\`
 - **macOS**: `brew install tesseract`
 - **Linux**: `sudo apt install tesseract-ocr`
 
@@ -319,17 +319,17 @@ ExamIQ processes uploaded papers through an 8-step pipeline executed via `POST /
 
 Two extraction strategies are tried in order:
 
-1. **Gemini AI Extractor** *(preferred)*
-   - Sends raw OCR text to Google Gemini 2.0 Flash
-   - AI identifies each question, its topic, subtopic, marks, type, and difficulty
-   - Ignores exam boilerplate (headers, instructions, metadata)
+**1. Gemini AI Extractor** *(preferred)*
+- Sends raw OCR text to Google Gemini 2.0 Flash
+- AI identifies each question, its topic, subtopic, marks, type, and difficulty
+- Ignores exam boilerplate (headers, instructions, metadata)
 
-2. **Regex Fallback Extractor**
-   - Pattern-based question boundary detection (`Q1.`, `1)`, `(a)`, etc.)
-   - Boilerplate filtering with 40+ regex patterns
-   - Keyword-based type classification (MCQ, Short, Long, Numerical, Case-Based)
-   - Heuristic difficulty estimation based on word count & keyword indicators
-   - Marks extraction from patterns like `[5 marks]`, `(10M)`, etc.
+**2. Regex Fallback Extractor**
+- Pattern-based question boundary detection (`Q1.`, `1)`, `(a)`, etc.)
+- Boilerplate filtering with 40+ regex patterns
+- Keyword-based type classification (MCQ, Short, Long, Numerical, Case-Based)
+- Heuristic difficulty estimation based on word count & keyword indicators
+- Marks extraction from patterns like `[5 marks]`, `(10M)`, etc.
 
 ### Step 2 — Semantic Embedding & Clustering
 
@@ -357,11 +357,12 @@ Score = Frequency × 0.4 + Marks_Weight × 0.3 + Trend × 0.2 + Difficulty × 0.
 All components are min-max normalized to [0, 100] before weighting.
 
 **Priority classification:**
+
 | Score Range | Priority |
 |---|---|
-| ≥ 75 | 🔴 Critical |
-| ≥ 50 | 🟠 High |
-| ≥ 25 | 🔵 Medium |
+| >= 75 | 🔴 Critical |
+| >= 50 | 🟠 High |
+| >= 25 | 🔵 Medium |
 | < 25 | ⚪ Low |
 
 ### Step 5 — Predictive Intelligence
@@ -371,15 +372,15 @@ Generates four types of insights:
 | Insight | Logic |
 |---|---|
 | 🔥 **Predicted Topics** | High frequency + absent in latest exam + not decreasing |
-| ⚠️ **Ignored High-Weight** | Importance ≥ 50 but frequency ≤ 1 |
-| 📉 **Low ROI** | Frequency ≤ 1, marks ≤ 5, importance < 25 |
+| ⚠️ **Ignored High-Weight** | Importance >= 50 but frequency <= 1 |
+| 📉 **Low ROI** | Frequency <= 1, marks <= 5, importance < 25 |
 | 🎯 **80/20 Pareto** | Top topics contributing ~80% of total marks |
 
 ### Step 6 — Dashboard Data
 
 Builds chart-ready data structures:
 - **Frequency bar chart** — top 20 topics by question count
-- **Topic × Year heatmap** — matrix of question counts per topic per year
+- **Topic x Year heatmap** — matrix of question counts per topic per year
 - **Difficulty pie chart** — Easy / Medium / Hard distribution
 - **KPI summary** — total questions, topics, years, avg importance, coverage %
 
@@ -389,12 +390,12 @@ Generates a personalized day-wise schedule based on:
 - **Time allocation**: 70% study, 15% revision, 10% practice, 5% buffer
 - **Topic priority**: Hours proportional to importance score
 - **Session limits**: Max 3-hour sessions per sitting
-- **Phase structure**: Study → Revision (top ⅓ topics) → Practice (top 5) → Buffer
+- **Phase structure**: Study → Revision (top 1/3 topics) → Practice (top 5) → Buffer
 
 ### Step 8 — Practice Question Generation
 
 Creates exam-style practice questions:
-- Generates 3 questions per high-importance topic (top 10 topics with score ≥ 25)
+- Generates 3 questions per high-importance topic (top 10 topics with score >= 25)
 - Matches historical question type and difficulty distributions
 - Uses template-based generation for 5 question types (Short, Long, MCQ, Numerical, Case-Based)
 - Includes study hints for each question
@@ -442,7 +443,7 @@ Creates exam-style practice questions:
 
 ## 🖥️ Frontend Pages
 
-### 1. Upload Page (`UploadPage.js`)
+### 1. Upload Page
 
 - **Drag-and-drop** zone for exam papers (PDF, PNG, JPG, JPEG)
 - **Syllabus upload** (optional) for coverage analysis
@@ -450,34 +451,34 @@ Creates exam-style practice questions:
 - **Demo button** to try the system without uploading files
 - **Loading animation** during AI analysis with step descriptions
 
-### 2. Analytics Dashboard (`DashboardPage.js`)
+### 2. Analytics Dashboard
 
 The main analytics view with **4 tabs**:
 
 | Tab | Content |
 |---|---|
-| **Overview** | Topic frequency bar chart, difficulty pie chart, key insights, topic×year heatmap |
+| **Overview** | Topic frequency bar chart, difficulty pie chart, key insights, topic x year heatmap |
 | **Topics** | Ranked table with frequency, marks, trend, importance score, and priority badges |
 | **Predictions** | Predicted topics, 80/20 focus list, low-ROI topics |
 | **Coverage** | Syllabus coverage progress bar, fully/partially/never-asked topic tags |
 
 **KPI Cards**: Total Questions, Topics Found, Years Analyzed, Avg Importance, Syllabus Coverage
 
-### 3. Study Planner (`PlannerPage.js`)
+### 3. Study Planner
 
 - **Timeline view**: Scrollable vertical timeline with color-coded session types
 - **Day Cards view**: Grid of day cards showing all sessions per day
 - **KPI Cards**: Total days, Study hours, Revision hours, Practice hours
 - **Color coding**: 📖 Study (blue), 🔄 Revision (purple), ✍️ Practice (teal), ☕ Buffer (gray)
 
-### 4. Practice Page (`PracticePage.js`)
+### 4. Practice Page
 
 - **Topic filter**: Pill-style filter buttons to view questions by topic
 - **Question cards**: Each showing question number, topic, difficulty badge, marks, and type
 - **Expandable hints**: Click "Show Hint" for study guidance
 - **KPI Cards**: Total questions, Topics covered, Currently showing
 
-### 5. Sidebar (`Sidebar.js`)
+### 5. Sidebar
 
 - Persistent navigation with ExamIQ branding
 - 4 nav items: Upload Papers, Dashboard, Study Planner, Practice
@@ -513,7 +514,7 @@ The backend uses **20+ Pydantic models** for type-safe data flow. Key models:
 | `total_marks` | float | Sum of marks |
 | `years_appeared` | list[int] | Years this topic appeared |
 | `trend` | string | increasing / decreasing / stable |
-| `importance_score` | float | Weighted composite score (0–100) |
+| `importance_score` | float | Weighted composite score (0-100) |
 | `priority` | enum | Critical, High, Medium, Low |
 | `rank` | int | Rank by importance |
 
@@ -544,7 +545,7 @@ Where:
 - **Frequency** = Total question count for the topic
 - **Marks Weight** = Total marks contribution
 - **Trend** = Linear regression slope of year-frequency data
-- **Difficulty** = Weighted sum: `Hard×3 + Medium×2 + Easy×1`
+- **Difficulty** = Weighted sum: `Hard x 3 + Medium x 2 + Easy x 1`
 
 All values are **min-max normalized** to [0, 100] before applying weights.
 
@@ -554,7 +555,7 @@ All values are **min-max normalized** to [0, 100] before applying weights.
 
 Click **"✨ Try Demo (No Upload Needed)"** on the Upload page to load pre-built demo data featuring:
 
-- **99 questions** across **12 topics** from **5 years** (2019–2023)
+- **99 questions** across **12 topics** from **5 years** (2019-2023)
 - Topics: Data Structures, Algorithms, DBMS, OS, Networks, OOP, Software Engineering, Compiler Design, Theory of Computation, Discrete Math, Machine Learning, Cloud Computing
 - Full predictions, 80/20 analysis, study plan, and practice questions
 - Useful for testing and demonstrating the system without real papers
