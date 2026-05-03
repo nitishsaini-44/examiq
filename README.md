@@ -575,6 +575,18 @@ The frontend uses a custom **dark-mode glassmorphism** design system defined in 
 
 ---
 
+## 📸 Screenshots
+
+| Upload Papers | Analytics Dashboard |
+|:---:|:---:|
+| ![Upload Papers](screenshots/upload.jpg) | ![Analytics Dashboard](screenshots/dashboard.jpg) |
+
+| Smart Study Planner | Practice Questions |
+|:---:|:---:|
+| ![Smart Study Planner](screenshots/planner.jpg) | ![Practice Questions](screenshots/practice.jpg) |
+
+---
+
 ## 🤝 Contributing
 
 1. Fork the repository
