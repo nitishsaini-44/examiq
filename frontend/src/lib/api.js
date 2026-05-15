@@ -8,13 +8,7 @@ export async function uploadPapers(files) {
   return res.json();
 }
 
-export async function uploadSyllabus(file) {
-  const formData = new FormData();
-  formData.append('file', file);
-  const res = await fetch(`${API_BASE}/api/upload/syllabus`, { method: 'POST', body: formData });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
-}
+
 
 export async function runAnalysis(params = {}) {
   const res = await fetch(`${API_BASE}/api/analyze`, {

@@ -100,6 +100,14 @@ def process_file(file_path: str) -> str:
         )
     elif ext in [".png", ".jpg", ".jpeg", ".bmp", ".tiff"]:
         return extract_text_from_image(file_path)
+    elif ext == ".txt":
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            return f.read().strip()
+    elif ext in [".docx", ".doc"]:
+        # DOCX/DOC files will be processed by HF Space directly
+        # Return empty string — the file path is what matters
+        logger.info(f"DOCX/DOC file will be processed by HF Space: {file_path}")
+        return ""
     else:
         raise ValueError(f"Unsupported file format: {ext}")
 

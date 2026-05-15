@@ -23,12 +23,11 @@ TESSERACT_CMD = os.getenv(
     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 )
 
-# Embedding model
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-
-# LLM API Keys (optional)
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+# HF Space Topic Analyzer
+HF_SPACE_URL = os.getenv(
+    "HF_SPACE_URL",
+    "https://nitishsaini44-exam-topic-analyzer.hf.space"
+)
 
 # CORS
 CORS_ORIGINS = os.getenv(
@@ -36,7 +35,6 @@ CORS_ORIGINS = os.getenv(
     "http://localhost:3000,http://127.0.0.1:3000"
 ).split(",")
 
-# Analysis settings
-DEFAULT_NUM_CLUSTERS = 10
-SIMILARITY_THRESHOLD = 0.75
+# Upload settings
 MAX_UPLOAD_SIZE_MB = 50
+

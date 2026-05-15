@@ -8,6 +8,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![Hugging Face](https://img.shields.io/badge/HuggingFace-Space-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/spaces/nitishsaini44/exam-topic-analyzer)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > Upload past exam papers → AI extracts questions, clusters topics, scores importance, predicts what's coming next, and generates a personalized study plan — all in one click.
@@ -25,20 +26,20 @@
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 - [Environment Variables](#-environment-variables)
-- [8-Step Analysis Pipeline](#-8-step-analysis-pipeline)
+- [Analysis Pipeline](#-analysis-pipeline)
 - [API Reference](#-api-reference)
 - [Frontend Pages](#-frontend-pages)
 - [Data Models](#-data-models)
 - [Smart Scoring Formula](#-smart-scoring-formula)
-- [Demo Mode](#-demo-mode)
 - [Design System](#-design-system)
+- [Screenshots](#-screenshots)
 - [Contributing](#-contributing)
 
 ---
 
 ## 🔭 Overview
 
-**ExamIQ** is a full-stack AI-powered academic decision engine that processes past university/college exam papers and syllabus documents to generate predictive study insights. It runs an **8-step analysis pipeline** combining OCR, NLP, semantic embeddings, clustering, importance scoring, and predictive intelligence to help students study smarter — not harder.
+**ExamIQ** is a full-stack AI-powered academic decision engine that processes past university/college exam papers to generate predictive study insights. It leverages a **deployed Hugging Face Space** for intelligent topic extraction and runs a multi-step analysis pipeline combining NLP, importance scoring, and predictive intelligence to help students study smarter — not harder.
 
 ### The Problem
 
@@ -53,13 +54,12 @@ Students waste hours manually reviewing past papers trying to figure out *what t
 
 ExamIQ automates this entire workflow:
 
-1. **Upload** past exam papers (PDF/images) and optionally a syllabus
-2. **AI extracts** every question, classifies topics, types, difficulty, and marks
-3. **Semantic clustering** groups conceptually similar questions across years
-4. **Importance scoring** ranks every topic using a weighted formula
-5. **Predictive engine** forecasts next-exam topics and identifies 80/20 focus areas
-6. **Study planner** generates a personalized day-by-day schedule
-7. **Practice generator** creates exam-style questions for self-assessment
+1. **Upload** past exam papers (PDF, DOCX, DOC, TXT, or images)
+2. **AI extracts** topics and scores via a deployed HuggingFace Space (Gradio API)
+3. **Importance scoring** ranks every topic using a weighted formula
+4. **Predictive engine** forecasts next-exam topics and identifies 80/20 focus areas
+5. **Study planner** generates a personalized day-by-day schedule
+6. **Practice generator** creates exam-style questions for self-assessment
 
 ---
 
@@ -67,21 +67,18 @@ ExamIQ automates this entire workflow:
 
 | Feature | Description |
 |---|---|
+| 🤖 **HuggingFace Space Integration** | Deployed [Exam Topic Analyzer](https://nitishsaini44-exam-topic-analyzer.hf.space) space for AI-powered topic extraction via Gradio Client |
 | 🔍 **Hybrid OCR Engine** | PyMuPDF for digital PDFs + Pytesseract fallback for scanned documents |
-| 🤖 **Gemini AI Extraction** | Google Gemini 2.0 Flash for high-accuracy question & topic extraction |
-| 📝 **Regex Fallback Extractor** | Pattern-based question parser when no API key is available |
-| 🧬 **Semantic Embeddings** | Sentence-Transformers (`all-MiniLM-L6-v2`) for concept-level understanding |
-| 🗂️ **FAISS Clustering** | Facebook AI Similarity Search for grouping related questions |
+| 📄 **Multi-Format Support** | PDF, DOCX, DOC, TXT, PNG, JPG, JPEG, BMP, TIFF |
 | 📊 **Frequency & Trend Analysis** | Linear regression on year-frequency data for trend detection |
 | 🏆 **Smart Importance Scoring** | Weighted formula: `Freq×0.4 + Marks×0.3 + Trend×0.2 + Difficulty×0.1` |
 | 🔮 **Predictive Intelligence** | Predicts next-exam topics, 80/20 Pareto strategy, low-ROI detection |
-| 📚 **Syllabus Coverage** | Cross-references extracted topics against syllabus for gap analysis |
 | 📅 **AI Study Planner** | Day-wise schedule with study/revision/practice/buffer phases |
 | ✍️ **Practice Generator** | Exam-style questions matching historical patterns |
 | 📈 **Visual Dashboard** | Interactive charts, heatmaps, KPI cards, topic rankings |
-| 🎮 **Demo Mode** | Try the full system without uploading any papers |
 | 🌙 **Dark Mode UI** | Premium glassmorphism design with smooth animations |
 | 📱 **Responsive** | Works on desktop, tablet, and mobile |
+| 🚀 **One-Command Launch** | `npm run dev` starts both frontend and backend concurrently |
 
 ---
 
@@ -106,19 +103,16 @@ ExamIQ automates this entire workflow:
 │  └────────┬────────┴───────┬───────┴────────┬──────────┘    │
 │           │                │                │               │
 │  ┌────────▼────────────────▼────────────────▼──────────┐    │
-│  │              Service Layer (8-Step Pipeline)         │    │
+│  │              Service Layer (Pipeline)                │    │
+│  │  ┌──────────────────┐ ┌────────────┐ ┌───────────┐  │    │
+│  │  │  HF Space Topic  │ │  Analyzer  │ │  Scorer   │  │    │
+│  │  │  Extractor       │ │  (trends)  │ │ (weights) │  │    │
+│  │  │  (Gradio Client) │ └────────────┘ └───────────┘  │    │
+│  │  └──────────────────┘                               │    │
 │  │  ┌───────────┐ ┌────────────┐ ┌──────────────────┐  │    │
-│  │  │ Extractor  │ │ Embeddings │ │ Gemini Extractor │  │    │
-│  │  │ (regex)    │ │ + FAISS    │ │ (LLM-powered)    │  │    │
+│  │  │ Predictor  │ │  Planner   │ │   Generator      │  │    │
+│  │  │(forecasts) │ │ (schedule) │ │   (practice)     │  │    │
 │  │  └───────────┘ └────────────┘ └──────────────────┘  │    │
-│  │  ┌───────────┐ ┌────────────┐ ┌──────────────────┐  │    │
-│  │  │ Analyzer   │ │  Scorer    │ │   Predictor      │  │    │
-│  │  │ (trends)   │ │ (weighted) │ │   (forecasts)    │  │    │
-│  │  └───────────┘ └────────────┘ └──────────────────┘  │    │
-│  │  ┌───────────┐ ┌────────────┐                       │    │
-│  │  │ Planner    │ │ Generator  │                       │    │
-│  │  │ (schedule) │ │ (practice) │                       │    │
-│  │  └───────────┘ └────────────┘                       │    │
 │  └─────────────────────────────────────────────────────┘    │
 │           │                                                  │
 │  ┌────────▼────────────────────────────────────────────┐    │
@@ -129,6 +123,11 @@ ExamIQ automates this entire workflow:
 │  │  │ Tesseract   │  │            │  │  models      │   │    │
 │  │  └────────────┘  └────────────┘  └──────────────┘   │    │
 │  └─────────────────────────────────────────────────────┘    │
+│                              │                               │
+│                    ┌─────────▼──────────┐                    │
+│                    │  HuggingFace Space │                    │
+│                    │  (Gradio API)      │                    │
+│                    └────────────────────┘                    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -138,17 +137,16 @@ ExamIQ automates this entire workflow:
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| **Frontend** | Next.js 16, React 19 | SPA with client-side routing |
+| **Frontend** | Next.js 16.2, React 19.2 | SPA with client-side routing |
 | **Charts** | Recharts 3.8 | Bar, Pie, Line charts & heatmaps |
-| **File Upload** | react-dropzone | Drag-and-drop file handling |
+| **File Upload** | Native drag-and-drop | Custom drop zone implementation |
 | **Backend** | Python FastAPI 0.115 | Async REST API server |
 | **OCR** | PyMuPDF 1.24, Pytesseract 0.3 | Text extraction from PDF/images |
-| **AI/LLM** | Google Gemini 2.0 Flash | Question extraction & topic classification |
-| **Embeddings** | Sentence-Transformers 3.0 | Semantic text embeddings (`all-MiniLM-L6-v2`) |
-| **Clustering** | FAISS-CPU 1.8 | K-Means clustering on embeddings |
-| **ML** | scikit-learn 1.5 | TF-IDF fallback, KMeans fallback |
+| **AI/NLP** | HuggingFace Space (Gradio Client) | Topic extraction & scoring via deployed model |
 | **Validation** | Pydantic 2.9 | Request/response schema validation |
 | **Image** | Pillow 10.4 | Image processing for OCR |
+| **Math** | NumPy 1.26 | Linear regression & normalization |
+| **Dev Runner** | concurrently 9.1 | Runs frontend + backend with single command |
 
 ---
 
@@ -157,13 +155,13 @@ ExamIQ automates this entire workflow:
 ```
 ExamIQ/
 ├── README.md
+├── package.json                      # Root: concurrently dev runner
 │
 ├── backend/                          # Python FastAPI Backend
-│   ├── .env.example                  # Environment variables template
+│   ├── .env                          # Environment variables
 │   ├── requirements.txt              # Python dependencies
 │   ├── uploads/                      # Uploaded files storage
-│   │   ├── papers/                   #   Exam paper files
-│   │   └── syllabus/                 #   Syllabus files
+│   │   └── papers/                   #   Exam paper files
 │   ├── data/                         # Persisted analysis data
 │   │   ├── uploaded_papers.json      #   Registry of uploaded papers
 │   │   └── analysis_result.json      #   Cached analysis results
@@ -173,7 +171,7 @@ ExamIQ/
 │       ├── main.py                   # FastAPI app entry point + CORS
 │       │
 │       ├── api/                      # API Route Handlers
-│       │   ├── upload.py             #   POST /api/upload/papers, /syllabus
+│       │   ├── upload.py             #   POST /api/upload/papers
 │       │   ├── analysis.py           #   POST /api/analyze, GET /api/results
 │       │   └── planner.py            #   GET /api/planner, /practice, /topics
 │       │
@@ -182,18 +180,15 @@ ExamIQ/
 │       │   └── ocr.py                #   Hybrid OCR engine (PyMuPDF + Tesseract)
 │       │
 │       ├── models/
-│       │   └── schemas.py            #   Pydantic data models (20+ schemas)
+│       │   └── schemas.py            #   Pydantic data models
 │       │
-│       └── services/                 # Business Logic (8-Step Pipeline)
-│           ├── extractor.py          #   STEP 1: Regex-based question extraction
-│           ├── gemini_extractor.py   #   STEP 1: Gemini AI question extraction
-│           ├── embeddings.py         #   STEP 1-2: Sentence embeddings + FAISS
-│           ├── analyzer.py           #   STEP 2-3: Frequency & trend analysis
-│           ├── scorer.py             #   STEP 4: Importance scoring
-│           ├── predictor.py          #   STEP 5: Predictive intelligence
-│           ├── planner.py            #   STEP 7: Study plan generation
-│           ├── generator.py          #   STEP 8: Practice question generation
-│           └── demo_data.py          #   Demo data generator
+│       └── services/                 # Business Logic (Pipeline)
+│           ├── hf_topic_extractor.py #   HuggingFace Space topic extraction
+│           ├── analyzer.py           #   Frequency & trend analysis
+│           ├── scorer.py             #   Importance scoring
+│           ├── predictor.py          #   Predictive intelligence
+│           ├── planner.py            #   Study plan generation
+│           └── generator.py          #   Practice question generation
 │
 └── frontend/                         # Next.js Frontend
     ├── package.json
@@ -209,7 +204,7 @@ ExamIQ/
         └── app/
             ├── layout.js             # Root layout + metadata
             ├── page.js               # Main page (SPA router)
-            ├── globals.css           # Complete design system (530+ lines)
+            ├── globals.css           # Complete design system
             │
             └── components/
                 ├── Sidebar.js        # Navigation sidebar
@@ -231,7 +226,6 @@ ExamIQ/
 | **Node.js** | 18+ | Frontend runtime |
 | **npm** | 9+ | Package manager |
 | **Tesseract OCR** | 5.x | *Optional* — needed only for scanned PDFs |
-| **Gemini API Key** | — | *Optional* — enables AI-powered extraction |
 
 ### 1. Clone the Repository
 
@@ -255,15 +249,9 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure environment
-cp .env.example .env
-# Edit .env with your settings (see Environment Variables section)
-
-# Start the server
+# Start the server (standalone)
 uvicorn app.main:app --reload --port 8000
 ```
-
-The API will be available at **http://localhost:8000** with interactive docs at **/docs**.
 
 ### 3. Frontend Setup
 
@@ -273,13 +261,25 @@ cd frontend
 # Install dependencies
 npm install
 
-# Start development server
+# Start development server (standalone)
 npm run dev
 ```
 
-The app will be available at **http://localhost:3000**.
+### 4. One-Command Launch (Recommended)
 
-### 4. (Optional) Install Tesseract OCR
+From the **project root**, run both frontend and backend simultaneously:
+
+```bash
+# Install root dev dependencies (first time only)
+npm install
+
+# Launch both servers concurrently
+npm run dev
+```
+
+This starts the backend on **http://localhost:8000** (with API docs at `/docs`) and the frontend on **http://localhost:3000**.
+
+### 5. (Optional) Install Tesseract OCR
 
 Tesseract is only required if you plan to upload **scanned** PDF papers (image-based PDFs). Digital/text-based PDFs work without it.
 
@@ -298,9 +298,7 @@ Tesseract is only required if you plan to upload **scanned** PDF papers (image-b
 | `UPLOAD_DIR` | `./uploads` | Directory for uploaded files |
 | `DATA_DIR` | `./data` | Directory for analysis data |
 | `TESSERACT_CMD` | `C:\Program Files\Tesseract-OCR\tesseract.exe` | Path to Tesseract binary |
-| `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Sentence-Transformers model name |
-| `GEMINI_API_KEY` | *(empty)* | Google Gemini API key for AI extraction |
-| `OPENAI_API_KEY` | *(empty)* | OpenAI API key (reserved for future use) |
+| `HF_SPACE_URL` | `https://nitishsaini44-exam-topic-analyzer.hf.space` | HuggingFace Space URL for topic extraction |
 | `CORS_ORIGINS` | `http://localhost:3000,...` | Allowed CORS origins |
 
 ### Frontend (`frontend/.env.local`)
@@ -311,40 +309,30 @@ Tesseract is only required if you plan to upload **scanned** PDF papers (image-b
 
 ---
 
-## 🔬 8-Step Analysis Pipeline
+## 🔬 Analysis Pipeline
 
-ExamIQ processes uploaded papers through an 8-step pipeline executed via `POST /api/analyze`:
+ExamIQ processes uploaded papers through a multi-step pipeline executed via `POST /api/analyze`:
 
-### Step 1 — Question Extraction
+### Step 1 — File Upload & OCR
 
-Two extraction strategies are tried in order:
+- Papers are uploaded and saved to disk
+- Text is extracted using **PyMuPDF** (digital PDFs) with **Pytesseract** fallback (scanned PDFs)
+- Supported formats: PDF, DOCX, DOC, TXT, PNG, JPG, JPEG, BMP, TIFF
+- Year is auto-detected from filenames (e.g., `exam_2023.pdf`)
 
-**1. Gemini AI Extractor** *(preferred)*
-- Sends raw OCR text to Google Gemini 2.0 Flash
-- AI identifies each question, its topic, subtopic, marks, type, and difficulty
-- Ignores exam boilerplate (headers, instructions, metadata)
+### Step 2 — HuggingFace Space Topic Extraction
 
-**2. Regex Fallback Extractor**
-- Pattern-based question boundary detection (`Q1.`, `1)`, `(a)`, etc.)
-- Boilerplate filtering with 40+ regex patterns
-- Keyword-based type classification (MCQ, Short, Long, Numerical, Case-Based)
-- Heuristic difficulty estimation based on word count & keyword indicators
-- Marks extraction from patterns like `[5 marks]`, `(10M)`, etc.
-
-### Step 2 — Semantic Embedding & Clustering
-
-- Generates 384-dimensional embeddings using `all-MiniLM-L6-v2` (Sentence-Transformers)
-- Falls back to TF-IDF vectorization if the model is unavailable
-- Clusters questions using **FAISS K-Means** (falls back to sklearn KMeans)
-- Assigns topic names to clusters from the most common meaningful words
-- Detects **concept repetition** across years (similarity threshold: 0.8)
+- Uploaded files (PDF, DOCX, DOC, TXT) are sent to the deployed [Exam Topic Analyzer](https://nitishsaini44-exam-topic-analyzer.hf.space) HuggingFace Space via the **Gradio Client API**
+- The Space performs AI-powered analysis: topic identification, frequency counting, and importance scoring
+- Returns structured data: topic scores dataframe + detailed analysis markdown
+- Results are parsed into `Question` and `TopicAnalysis` objects
 
 ### Step 3 — Frequency & Trend Analysis
 
 - Groups questions by topic and computes per-topic statistics
 - Calculates **trend** using linear regression on year-frequency data
 - Classifies trends as `increasing` (slope > 0.3), `decreasing` (slope < -0.3), or `stable`
-- Computes **syllabus coverage**: fully covered / partially covered / never asked
+- Computes **syllabus coverage**: fully covered / partially covered
 
 ### Step 4 — Smart Importance Scoring
 
@@ -380,7 +368,7 @@ Generates four types of insights:
 
 Builds chart-ready data structures:
 - **Frequency bar chart** — top 20 topics by question count
-- **Topic x Year heatmap** — matrix of question counts per topic per year
+- **Topic × Year heatmap** — matrix of question counts per topic per year
 - **Difficulty pie chart** — Easy / Medium / Hard distribution
 - **KPI summary** — total questions, topics, years, avg importance, coverage %
 
@@ -408,16 +396,14 @@ Creates exam-style practice questions:
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/upload/papers` | Upload exam papers (PDF/PNG/JPG). Accepts `multipart/form-data` with `files` field. |
-| `POST` | `/api/upload/syllabus` | Upload syllabus file (PDF/TXT/Image). Accepts `multipart/form-data` with `file` field. |
+| `POST` | `/api/upload/papers` | Upload exam papers (PDF/DOCX/DOC/TXT/PNG/JPG). Accepts `multipart/form-data` with `files` field. |
 | `GET` | `/api/upload/status` | Get current upload status (paper count, years, text length). |
 
 ### Analysis Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/analyze` | Run the full 8-step analysis pipeline. Body: `{ exam_days, hours_per_day, subject }` |
-| `POST` | `/api/demo` | Load demo data (no upload needed). |
+| `POST` | `/api/analyze` | Run the full analysis pipeline. Body: `{ exam_days, hours_per_day, subject }` |
 | `GET` | `/api/results` | Get latest cached analysis results. |
 | `GET` | `/api/dashboard` | Get dashboard chart data (Step 6). |
 | `GET` | `/api/predictions` | Get predictive insights (Step 5). |
@@ -445,10 +431,9 @@ Creates exam-style practice questions:
 
 ### 1. Upload Page
 
-- **Drag-and-drop** zone for exam papers (PDF, PNG, JPG, JPEG)
-- **Syllabus upload** (optional) for coverage analysis
+- **Drag-and-drop** zone for exam papers (PDF, DOCX, DOC, TXT, PNG, JPG, JPEG)
 - **Configuration inputs**: Subject name, Days to exam, Hours per day
-- **Demo button** to try the system without uploading files
+- **Two-step flow**: Upload files first → then trigger AI analysis
 - **Loading animation** during AI analysis with step descriptions
 
 ### 2. Analytics Dashboard
@@ -457,10 +442,10 @@ The main analytics view with **4 tabs**:
 
 | Tab | Content |
 |---|---|
-| **Overview** | Topic frequency bar chart, difficulty pie chart, key insights, topic x year heatmap |
+| **Overview** | Topic frequency bar chart, difficulty pie chart, key insights, topic × year heatmap |
 | **Topics** | Ranked table with frequency, marks, trend, importance score, and priority badges |
 | **Predictions** | Predicted topics, 80/20 focus list, low-ROI topics |
-| **Coverage** | Syllabus coverage progress bar, fully/partially/never-asked topic tags |
+| **Coverage** | Syllabus coverage progress bar, fully/partially covered topic tags |
 
 **KPI Cards**: Total Questions, Topics Found, Years Analyzed, Avg Importance, Syllabus Coverage
 
@@ -489,7 +474,7 @@ The main analytics view with **4 tabs**:
 
 ## 📦 Data Models
 
-The backend uses **20+ Pydantic models** for type-safe data flow. Key models:
+The backend uses **Pydantic models** for type-safe data flow. Key models:
 
 ### Question
 
@@ -497,13 +482,15 @@ The backend uses **20+ Pydantic models** for type-safe data flow. Key models:
 |---|---|---|
 | `id` | string | Unique 8-char UUID |
 | `text` | string | Full question text |
+| `subject` | string | Subject name |
 | `topic` | string | Academic topic (e.g., "Binary Trees") |
 | `subtopic` | string | Specific subtopic |
-| `question_type` | enum | MCQ, Short Answer, Long Answer, Numerical, Case-Based |
+| `question_type` | enum | MCQ, Short Answer, Long Answer, Numerical, Case-Based, Unknown |
 | `marks` | float | Marks allocated |
 | `difficulty` | enum | Easy, Medium, Hard |
 | `year` | int | Exam year |
-| `cluster_id` | int | FAISS cluster assignment |
+| `page` | int | Source page number |
+| `cluster_id` | int | Cluster assignment |
 
 ### TopicAnalysis
 
@@ -512,8 +499,10 @@ The backend uses **20+ Pydantic models** for type-safe data flow. Key models:
 | `topic` | string | Topic name |
 | `frequency` | int | Total question count |
 | `total_marks` | float | Sum of marks |
+| `avg_marks` | float | Average marks per question |
 | `years_appeared` | list[int] | Years this topic appeared |
 | `trend` | string | increasing / decreasing / stable |
+| `trend_score` | float | Linear regression slope |
 | `importance_score` | float | Weighted composite score (0-100) |
 | `priority` | enum | Critical, High, Medium, Low |
 | `rank` | int | Rank by importance |
@@ -545,26 +534,15 @@ Where:
 - **Frequency** = Total question count for the topic
 - **Marks Weight** = Total marks contribution
 - **Trend** = Linear regression slope of year-frequency data
-- **Difficulty** = Weighted sum: `Hard x 3 + Medium x 2 + Easy x 1`
+- **Difficulty** = Weighted sum: `Hard × 3 + Medium × 2 + Easy × 1`
 
 All values are **min-max normalized** to [0, 100] before applying weights.
 
 ---
 
-## 🎮 Demo Mode
-
-Click **"✨ Try Demo (No Upload Needed)"** on the Upload page to load pre-built demo data featuring:
-
-- **99 questions** across **12 topics** from **5 years** (2019-2023)
-- Topics: Data Structures, Algorithms, DBMS, OS, Networks, OOP, Software Engineering, Compiler Design, Theory of Computation, Discrete Math, Machine Learning, Cloud Computing
-- Full predictions, 80/20 analysis, study plan, and practice questions
-- Useful for testing and demonstrating the system without real papers
-
----
-
 ## 🎨 Design System
 
-The frontend uses a custom **dark-mode glassmorphism** design system defined in `globals.css` (530+ lines):
+The frontend uses a custom **dark-mode glassmorphism** design system defined in `globals.css`:
 
 - **Typography**: Inter (UI) + JetBrains Mono (code)
 - **Color palette**: Indigo, Purple, Teal, Rose, Amber, Green accents

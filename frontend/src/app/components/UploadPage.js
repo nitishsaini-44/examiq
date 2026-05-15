@@ -1,12 +1,12 @@
 'use client';
 import { useState, useCallback } from 'react';
-import { uploadPapers, uploadSyllabus, runAnalysis } from '../../lib/api';
+import { uploadPapers, runAnalysis } from '../../lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function UploadPage({ onAnalysisComplete }) {
   const [papers, setPapers] = useState([]);
-  const [syllabus, setSyllabus] = useState(null);
+
   const [uploading, setUploading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [uploadResult, setUploadResult] = useState(null);
@@ -20,7 +20,7 @@ export default function UploadPage({ onAnalysisComplete }) {
     e.preventDefault();
     setDragActive(false);
     const files = Array.from(e.dataTransfer.files).filter(f =>
-      /\.(pdf|png|jpg|jpeg)$/i.test(f.name)
+      /\.(pdf|png|jpg|jpeg|docx|doc|txt)$/i.test(f.name)
     );
     setPapers(prev => [...prev, ...files]);
   }, []);
@@ -37,7 +37,7 @@ export default function UploadPage({ onAnalysisComplete }) {
     try {
       const result = await uploadPapers(papers);
       setUploadResult(result);
-      if (syllabus) await uploadSyllabus(syllabus);
+
     } catch (err) {
       setError('Upload failed: ' + err.message);
     }
@@ -60,22 +60,7 @@ export default function UploadPage({ onAnalysisComplete }) {
     setAnalyzing(false);
   };
 
-  const handleDemo = async () => {
-    setAnalyzing(true);
-    setError('');
-    try {
-      const res = await fetch(`${API_BASE}/api/demo`, { method: 'POST' });
-      const result = await res.json();
-      if (result.success) {
-        onAnalysisComplete(result.result);
-      } else {
-        setError('Demo failed');
-      }
-    } catch (err) {
-      setError('Demo failed: ' + err.message);
-    }
-    setAnalyzing(false);
-  };
+
 
   if (analyzing) {
     return (
@@ -114,8 +99,8 @@ export default function UploadPage({ onAnalysisComplete }) {
           >
             <div className="upload-icon">📂</div>
             <div className="upload-title">Drop papers here</div>
-            <div className="upload-subtitle">PDF, PNG, JPG • Multiple files supported</div>
-            <input id="paper-input" type="file" multiple accept=".pdf,.png,.jpg,.jpeg" onChange={handlePaperSelect} style={{ display: 'none' }} />
+            <div className="upload-subtitle">PDF, DOCX, DOC, TXT, PNG, JPG • Multiple files supported</div>
+            <input id="paper-input" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.docx,.doc,.txt" onChange={handlePaperSelect} style={{ display: 'none' }} />
           </div>
           {papers.length > 0 && (
             <div style={{ marginTop: 16, maxHeight: 150, overflow: 'auto' }}>
@@ -129,17 +114,10 @@ export default function UploadPage({ onAnalysisComplete }) {
           )}
         </div>
 
-        {/* Syllabus Upload */}
         <div className="card animate-slide" style={{ animationDelay: '0.1s' }}>
           <div className="card-header">
-            <div className="card-title">📚 Syllabus</div>
+            <div className="card-title">⚙️ Settings</div>
             <span className="card-subtitle">Optional</span>
-          </div>
-          <div className="upload-zone" onClick={() => document.getElementById('syllabus-input').click()}>
-            <div className="upload-icon">{syllabus ? '✅' : '📋'}</div>
-            <div className="upload-title">{syllabus ? syllabus.name : 'Upload Syllabus'}</div>
-            <div className="upload-subtitle">PDF, TXT, PNG, JPG</div>
-            <input id="syllabus-input" type="file" accept=".pdf,.txt,.png,.jpg,.jpeg" onChange={(e) => setSyllabus(e.target.files[0])} style={{ display: 'none' }} />
           </div>
 
           {/* Settings */}
@@ -176,11 +154,6 @@ export default function UploadPage({ onAnalysisComplete }) {
             </button>
           </div>
         )}
-        <div style={{ marginTop: 20 }}>
-          <button className="btn btn-secondary" onClick={handleDemo} style={{ fontSize: 14 }}>
-            ✨ Try Demo (No Upload Needed)
-          </button>
-        </div>
       </div>
     </div>
   );

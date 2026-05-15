@@ -19,7 +19,6 @@ router = APIRouter(prefix="/api/upload", tags=["upload"])
 uploaded_data = {
     "papers": [],  # [{filename, year, text}]
     "syllabus_text": "",
-    "syllabus_file": "",
 }
 
 
@@ -36,7 +35,7 @@ async def upload_papers(files: list[UploadFile] = File(...)):
     for file in files:
         try:
             ext = Path(file.filename).suffix.lower()
-            if ext not in [".pdf", ".png", ".jpg", ".jpeg", ".bmp", ".tiff"]:
+            if ext not in [".pdf", ".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".docx", ".doc", ".txt"]:
                 logger.warning(f"Skipping unsupported file: {file.filename}")
                 continue
 
@@ -92,37 +91,6 @@ async def upload_papers(files: list[UploadFile] = File(...)):
     )
 
 
-@router.post("/syllabus", response_model=UploadResponse)
-async def upload_syllabus(file: UploadFile = File(...)):
-    """Upload syllabus file (PDF/image/text)."""
-    syllabus_dir = UPLOAD_DIR / "syllabus"
-    syllabus_dir.mkdir(parents=True, exist_ok=True)
-
-    ext = Path(file.filename).suffix.lower()
-    save_path = syllabus_dir / f"syllabus{ext}"
-
-    content = await file.read()
-    with open(save_path, "wb") as f:
-        f.write(content)
-
-    if ext == ".txt":
-        text = content.decode("utf-8", errors="ignore")
-    else:
-        text = process_file(str(save_path))
-
-    uploaded_data["syllabus_text"] = text
-    uploaded_data["syllabus_file"] = str(save_path)
-
-    data_file = DATA_DIR / "syllabus.json"
-    with open(data_file, "w", encoding="utf-8") as f:
-        json.dump({"text": text, "file": str(save_path)}, f, indent=2, ensure_ascii=False)
-
-    return UploadResponse(
-        message="Syllabus uploaded and processed",
-        files_processed=1,
-        total_text_length=len(text)
-    )
-
 
 @router.get("/status")
 async def upload_status():
@@ -142,15 +110,9 @@ def get_uploaded_data():
 
     # Try loading from disk
     papers_file = DATA_DIR / "uploaded_papers.json"
-    syllabus_file = DATA_DIR / "syllabus.json"
 
     if papers_file.exists():
         with open(papers_file, "r", encoding="utf-8") as f:
             uploaded_data["papers"] = json.load(f)
-
-    if syllabus_file.exists():
-        with open(syllabus_file, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            uploaded_data["syllabus_text"] = data.get("text", "")
 
     return uploaded_data
